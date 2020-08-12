@@ -1,0 +1,55 @@
+version: '3'
+services: 
+
+    app-users:
+        container_name: users-node-mysql
+        build: ./UserService
+        environment:
+            - DBHOST=mysql-host
+        ports: 
+            - "8081:3001"
+        links: 
+            - mysql-host
+        depends_on:
+            - mysql-host
+        restart: always
+        command: npm start
+
+    app-products:
+        container_name: products-node-mysql
+        build: ./ProductService
+        ports: 
+            - '8082:3002'
+        links: 
+            - mysql-host
+        depends_on: 
+            - mysql-host
+        restart: always
+        command: npm start
+
+    app-orders:
+        container_name: orders-node-mysql
+        build: ./OrderService
+        ports: 
+            - '8083:3003'
+        links: 
+            - mysql-host
+        depends_on: 
+            - mysql-host
+        restart: always
+        command: npm start
+
+   
+    mysql-host: 
+        container_name: mysql-host
+        image: mysql:8.0.2
+        volumes: 
+            - ./db/script/:/docker-entrypoint-initdb.d
+        command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+        restart: always
+        environment: 
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: db_mystore
+        ports:
+            - "3308:3306"
+    

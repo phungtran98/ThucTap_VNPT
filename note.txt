@@ -1,0 +1,22 @@
+1. Config users-service
+ - npm start port 3000
+ - nodejs users listen ports 3001
+ - web browser listen localhost:8081
+ -users-node-mysql listen 33061:3306
+
+2. Config products-service
+ - npm start port 4000
+ - nodejs products listen ports 3002
+ - web browser listen locahhost:8082
+ -users-node-mysql listen 33062:3306
+
+3. Config orther-service
+ - npm start port 5000
+ - nodejs orther listen ports 3003
+ - web browser listen locahhost:8083
+ -users-node-mysql listen 33063:3306
+
+
+4.Konga
+    -u:ttphung or phung@gmail.com
+    -p:ttphung
