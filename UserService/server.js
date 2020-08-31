@@ -35,13 +35,14 @@ con.connect(function(err) {
     });
     
     app.get('/users',(req, res) => {
-      let sql = "SELECT * FROM users";
+      let sql = "SELECT * FROM users where u_id <> 10";
       let query = con.query(sql, (err, users) => {
         if(err) throw err;
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify(users));
       });
     });
+
     app.get('/users/:id',(req, res) => {
       let id =req.params.id;
       let sql = "SELECT * FROM users where u_id = "+id;
@@ -52,34 +53,51 @@ con.connect(function(err) {
       });
     });
 
-  app.post('/users',urlencodedParser,(req, res) => {
+    app.post('/users',urlencodedParser,(req, res) => {
      
-        let u_name = req.body.name;
-        let lastName = u_name.split(' ').slice(-1).join(' ');
-        let u_address = req.body.address;
-        let u_phone = req.body.phone;
-        let u_avatar = "avatar1.jpg";
-        let u_email = req.body.email;
-        let u_username = lastName;
-        let u_password = lastName;
-        let data =[u_name,u_address,u_phone,u_avatar,u_username,u_password,u_email];
-        let sql = " INSERT INTO users(u_name,u_address,u_phone,u_avatar,u_username,u_password,u_email)  VALUES(?) ";
-        con.query(sql,[data], function (err, result) {
+        // let u_name = req.body.name;
+        // let lastName = u_name.split(' ').slice(-1).join(' ');
+        // let u_address = req.body.address;
+        // let u_phone = req.body.phone;
+        // let u_avatar = "avatar1.jpg";
+        // let u_email = req.body.email;
+        // let u_username = lastName;
+        // let u_password = lastName;
+        let data =req.body.data;
+        let sql = " INSERT INTO users(u_name,u_address,u_phone,u_avatar,u_username,u_password,u_email) VALUES ('"+data.u_name+"','"+data.u_address+"',"+data.u_phone+",'"+data.u_avatar+"','"+data.u_username+"','"+data.u_password+"','"+data.u_email+"')";
+        con.query(sql, function (err, result) {
           if (err) throw err;
           console.log("Number of records inserted: " + result.affectedRows);
         });
-        // console.log(data);
+        console.log(data);
         
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify(data));
+        // res.setHeader('Content-Type', 'application/json');
+        // res.end(JSON.stringify(data));
         // res.send('welcome, ' + req.body);
       });
 
+      //xóa
+    app.post('/users/delete',(req, res) => {
+      // let item =req.body.updateitem;
+      let id =req.body.id;
+      // console.log(item);
+      let sql = "  DELETE FROM users WHERE u_id="+id+"";
+      let query = con.query(sql, (err, type) => {
+        if(err) throw err;
+        else{
+          res.json({success:1})
+          console.log("DELETE");
+        }
+      });
+    });
 
-      //login
+
+    //login
 
     app.post('/login',urlencodedParser,(req,res) => {
 
+      // let user = 'phug';
+      // let pass = 'phung';
       let user = req.body.userName;
       let pass = req.body.passWord;
       // console.log(user);
@@ -90,13 +108,13 @@ con.connect(function(err) {
       con.query(sql, function (err, result) {
         if (err) throw err;
        else{  
-         if(result[0].u_id > 0)
+         if(result[0].u_id != '')
          {
           res.json({success:1,id:result[0].u_id});//nếu thêm thành công trả về 1;
-          console.log(result);
          }
          else
          {
+          console.log("2: "+result[0].u_id);
           res.json({success:0});
          }
 

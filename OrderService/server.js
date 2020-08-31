@@ -30,26 +30,48 @@ con.connect(function(err) {
     console.log('connected! Service Orders listen locahost:8083 ....');
 
 
-    app.get('/orders',(req, res) => {
-      let sql = "SELECT * FROM orders";
-      let query = con.query(sql, (err, orders) => {
-        if(err) throw err;
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify(orders));
-      });
+   //orders
+   app.post('/orders/',(req, res) => {
+    let data =req.body.data
+    // console.log(data.uid);
+    let sql = " INSERT INTO orders(u_id) VALUES("+data.uid+")";
+    let query = con.query(sql, (err, result) => {
+      if(err) throw err;  
+      else{
+        let sql1 = " INSERT INTO orders_detail(o_id,p_id,od_qty,od_total) VALUES("+result.insertId+","+data.up+","+data.qty+","+data.total+")";
+        let query = con.query(sql1, (err, result) => {
+          if(err) throw err;  
+          res.json({success:1})
+          console.log("DELETE");
+        })
+       
+      }
     });
+  });
 
-
-  
-    app.get('/orders/:id',(req, res) => {
-      let id =req.params.id;
-      let sql = "SELECT * FROM orders where o_id = "+id;
-      let query = con.query(sql, (err, orders) => {
-        if(err) throw err;
+  app.get('/orders',(req, res) => {
+    let sql = "select * from orders inner join  users  on users.u_id = orders.u_id inner join orders_detail on orders_detail.o_id = orders.o_id inner join products on products.p_id = orders_detail.p_id";
+    let query = con.query(sql, (err, type) => {
+      if(err) throw err;
+      else{
         res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify(orders));
-      });
+        res.end(JSON.stringify(type));
+        console.log(type);
+      }
     });
+  });
+
+  app.post('/orders/detail',(req,res)=>{
+   let id = req.body.id
+   let sql = "  DELETE FROM orders_detail WHERE o_id="+id+"";
+    let query = con.query(sql, (err, type) => {
+      if(err) throw err;
+      else{
+        res.json({success:1})
+        console.log("DELETE");
+      }
+    });
+  })
 
 
 
